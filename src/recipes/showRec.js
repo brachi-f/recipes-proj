@@ -2,9 +2,10 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 
-export default (recipeId) => {
+export default ({recipeId}) => {
     const [categoryList, setCategoryList] = useState([]);
     const [recipe, setRecipe] = useState();
+    const [recipeList, setRecipeList] = useState([]);
     useEffect(() => {
         axios.get(`http://localhost:8080/api/category`)
             .then(c => {
@@ -12,12 +13,14 @@ export default (recipeId) => {
             });
         axios.get(`http://localhost:8080/api/recipe`)
             .then(re => {
-                console.log(recipeId)
-                setRecipe(re.data[recipeId]);
-                console.log(recipe)
+                setRecipeList(re.data)
+                console.log(recipeList)
             })
     }, [])
-    const difficulties = ["", "", ""]
+    useEffect(()=>{
+        setRecipe(recipeList.find(r=>r.Id==recipeId))
+    },recipeList)
+    const difficulties = ["קל", "בינוני", "קשה"]
     return <>
         <h2>{recipe?.Name}</h2>
         <img src={recipe?.Img} />

@@ -3,6 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { useEffect, useState } from "react"
 import axios from "axios"
+import Recipe from "./recipe"
 
 const schema = yup.object({
     CategoryId: yup.number().integer().required().min(1, "חובה לבחור קטגוריה"),

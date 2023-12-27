@@ -1,14 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './recipes/showRec';
+import RecipeForm from './recipes/updateRec';
 import reportWebVitals from './reportWebVitals';
+import Recipe from './recipes/recipe';
+import axios from "axios";
+import App from './App'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* <App IdRecipe={1} isNew={true}/> */}
-    <App  />
+  <App/>
+    {/* <RecipeForm IdRecipe={1} isNew={true}/> */}
   </React.StrictMode>
 );
 
