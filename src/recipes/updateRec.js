@@ -5,28 +5,27 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 
 const schema = yup.object({
-    CategoryId: yup.number().integer().required(),
-    Name: yup.string().max(20).required(),
-    Img: yup.string().url().required(),
-    Duration: yup.number().integer().required(),
-    Difficulty: yup.number().integer().positive().required(),
-    Description: yup.string().min(3).max(30).required(),
+    CategoryId: yup.number().integer().required().min(1, "חובה לבחור קטגוריה"),
+    Name: yup.string().required("חובה להכניס שם"),
+    Img: yup.string().url().required("חובה להכניס כתובת URL של תמונה"),
+    Duration: yup.number("משך זמן צריך להיותר מספר").positive("משך זמן לא יכול להיות מספר שלילי").required("חובה להכניס משך זמן"),
+    Difficulty: yup.number().integer().positive().required().min(1, "חובה לבחור רמת קושי"),
+    Description: yup.string().required("חובה להכניס תיאור"),
     Instructions: yup.array().of(
         yup.object().shape({
-            Instruction: yup.string()
+            Instruc: yup.string().required("חובה להכניס הוראה")
         })
-    ).required(),
+    ),
     Ingrident: yup.array().of(
         yup.object().shape({
-            Name: yup.string().required(),
-            Count: yup.number().positive(),
-            Type: yup.string()
+            Name: yup.string().required("הכנס שם"),
+            Count: yup.number("הכנס מספר").positive("כמות לא יכולה להיות שלילית").required("הכנס כמות"),
+            Type: yup.string().required("הכנס סוג")
         })
-    ).required()
+    )
 })
-    .required()
 
-export default ({ IdRecipe }) => {
+export default ({ IdRecipe, isNew }) => {
     const {
         register,
         handleSubmit,
@@ -52,65 +51,87 @@ export default ({ IdRecipe }) => {
     useEffect(() => {
         axios.get(`http://localhost:8080/api/category`)
             .then(c => {
-                // console.log(c.data)
                 setCategoryList(c.data);
-                // console.log(categoryList);
             });
         axios.get(`http://localhost:8080/api/recipe`)
             .then(r => {
                 setRecipeList(r.data);
-                // console.log(recipeList);
-                // console.log(recipeList[1]);
             });
-            
-    }, [])
-    useEffect (()=>{
-        recipe?.Ingrident?.map((ing)=>IngridentAppend(ing))
-        recipe?.Instructions?.map((ins)=>InstructionsAppend(ins))
-    },recipe)
-
-    const onSubmit = (data) => console.log(data)
-
-
-
-    return <>
-        <button onClick={() => {
-            console.log(recipeList[IdRecipe])
+        if (isNew)
             setRecipe(recipeList[IdRecipe])
-            console.log(categoryList);
-            console.log(recipeList);
-            console.log(recipe)
-            console.log(IdRecipe)
-        }}>lists</button>
-        <h2>הוספת מתכון</h2>
-        <h2>עריכת מתכון</h2>
+    }, [])
+    useEffect(() => {
+        recipe?.Ingrident?.map((ing) => IngridentAppend(ing))
+        recipe?.Instructions?.map((ins) => {
+            InstructionsAppend({ Instruc: ins })
+        })
+    }, recipe)
+    const onSubmit = (data) => {
+        //alert(JSON.stringify(data))
+        let recipeToSend = {
+            Id: IdRecipe,
+            Name: data.Name, UserId: 999, CategoryId: data.CategoryId, Img: data.Img, Duration: data.Duration, Difficulty: data.Difficulty, Description: data.Description,
+            Ingrident: data.Ingrident, Instructions: data.Instructions
+        }
+        let responseRecipe;
+        if (isNew) {
+            axios.post(`http://localhost:8080/api/recipe`, recipeToSend)
+                .then(res => responseRecipe = res)
+        }
+        else {
+            axios.post(`http://localhost:8080/api/recipe/edit`, recipeToSend)
+                .then(res => responseRecipe = res)
+        }
+    }
+    return <>
+        {isNew ? <h2>הוספת מתכון</h2> : <h2>עריכת מתכון</h2>}
         <form onSubmit={handleSubmit(onSubmit)}>
-            <select {...register("CategoryId")} defaultValue={recipe?.CategoryId ? recipe.CategoryId : -1} name="categoryId" id="categoryId">
-                <option value="-1" disabled>קטגוריה</option>
-                {categoryList?.map((category) =>
-                    <option key={category.Id} value={category.Id}>{category.Name}</option>
+            <select {...register("CategoryId")} name="CategoryId">
+                <option value={0} disabled>קטגוריה</option>
+                {categoryList?.map((category) => <>
+                    <option /*key={category.Id}*/ value={category.Id}>{category.Name}</option></>
                 )}
             </select>
-            <input {...register("Name")} value={recipe?.Name ? recipe.Name : "שם המתכון"} />
-            <input {...register("Img")} value={recipe?.Img ? recipe.Img : "url של תמונה מתאימה"} />
-            <input {...register("Duration")} value={recipe?.Duration ? recipe.Duration : "זמן הכנה בדקות"} />
-            <select {...register("Difficulty")} defaultValue={recipe?.Difficulty ? recipe.Difficulty : 0} name="difficulty">
-                <option disabled>רמת קושי</option>
+            <p>{errors.CategoryId?.message}</p>
+            <input {...register("Name")} defaultValue={recipe?.Name ? recipe.Name : ""} placeholder="שם המתכון " />
+            <p>{errors.Name?.message}</p>
+            <input {...register("Img")} defaultValue={recipe?.Img ? recipe.Img : ""} placeholder="url של תמונה מתאימה" />
+            <p>{errors.Img?.message}</p>
+            <input {...register("Description")} defaultValue={recipe?.Description ? recipe.Description : ""} placeholder="תיאור קצר" />
+            <p>{errors.Description?.message}</p>
+            <input {...register("Duration")} defaultValue={recipe?.Duration} placeholder="זמן הכנה בדקות" />
+            <p>{errors.Duration?.message}</p>
+            <select {...register("Difficulty")} name="Difficulty" >
+                <option value="0" disabled>רמת קושי</option>
                 <option value="1">קל</option>
                 <option value="2">בינוני</option>
                 <option value="3">קשה</option>
             </select>
+            <p>{errors.Difficulty?.message}</p>
             <h4>רכיבים</h4>
-            
-            {IngridentFields?.map((ingrident, index) => 
+            {IngridentFields?.map((ingrident, index) =>
                 <div key={index}>
-                    <input {...register(`Ingrident.${index}.Name`)} value={ingrident?.Name} placeholder="שם מוצר" />
-                    <input {...register(`Ingrident.${index}.Count`)} value={ingrident?.Count} placeholder="כמות" />
-                    <input {...register(`Ingrident.${index}.Type`)} value={ingrident?.Type} placeholder="סוג" />
+                    <input {...register(`Ingrident.${index}.Name`)} defaultValue={ingrident?.Name} placeholder="שם מוצר" />
+                    <p>{errors[`Ingrident.${index}.Name`]?.message}</p>
+                    <input {...register(`Ingrident.${index}.Count`)} defaultValue={ingrident?.Count} placeholder="כמות" />
+                    <p>{errors[`Ingrident.${index}.Count`]?.message}</p>
+                    <input {...register(`Ingrident.${index}.Type`)} defaultValue={ingrident?.Type} placeholder="סוג" />
+                    <p>{errors[`Ingrident.${index}.Type`]?.message}</p>
                     <p onClick={() => IngridentRemove(index)}>מחק מוצר</p>
                 </div>
             )}
-            <p onClick={() => IngridentAppend({})}>הוסף מוצר</p>
+            <p onClick={() => IngridentAppend({ Name: null, Count: null, Type: null })}>הוסף מוצר</p>
+            <h4>הוראות הכנה</h4>
+            {InstructionsFields?.map((instruction, index) =>
+                <div key={index}>
+                    <input {...register(`Instructions.${index}.Instruc`)} defaultValue={instruction?.Instruc ? instruction.Instruc : ""} placeholder="הוראת הכנה" />
+                    <p>{errors.Instructions?.message}</p>
+                    {console.log(errors)}
+                    <p onClick={() => InstructionsRemove(index)}>מחק הוראה</p>
+                </div>
+            )}
+            <p onClick={() => InstructionsAppend({ Instruc: null })}>הוסף הוראה</p>
+            <input type="submit" >שמירת המתכון</input>
         </form>
     </>
 }

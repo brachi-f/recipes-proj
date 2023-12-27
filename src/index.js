@@ -1,13 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './recipes/updateRec';
+import App from './recipes/showRec';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App IdRecipe={1}/>
+    {/* <App IdRecipe={1} isNew={true}/> */}
+    <App  />
   </React.StrictMode>
 );
 
