@@ -2,19 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { Route, Routes } from 'react-router-dom';
-import Login from './login';
-import Sighin from './sighin';
-import Home from './homePage';
+import { BrowserRouter } from 'react-router-dom';
+import 'semantic-ui-css/semantic.min.css'
+import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Routes>
-      <Route path='/' element={<Home/>}/>
-      <Route path="/login" element={<Login/>}/>
-      <Route path="/sighin" element={<Sighin/>}/>
-    </Routes>
+    <BrowserRouter>
+      {/* <Provider store={store}> */}
+        <App />
+      {/* </Provider> */}
+    </BrowserRouter>
+    
   </React.StrictMode>
 );
 

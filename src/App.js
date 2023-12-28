@@ -1,23 +1,16 @@
-import axios from "axios"
-import { useEffect, useState } from "react"
-import Recipe from "./recipes/recipe"
-import RecipeList from "./recipes/recipesList"
-
+import Home from "./homePage"
+import { Route, Routes } from 'react-router-dom';
+import Login from './login';
+import Sighin from './sighin';
+import Categories from "./categories/categories"
 const App = () => {
-    const [recipes, setRecipes] = useState([])
-    useEffect(() => {
-        axios.get('http://localhost:8080/api/recipe').then(x => setRecipes(x.data))
-    }, [])
-    console.log(recipes[0])
     return <>
-    {/* <Recipe recipe={recipes[0]}/>
-        {recipes.map((rec,index) => {
-            <Recipe recipe={recipes[index]} />
-            // console.log("calling to recipe");
-            // console.log("recipe = "+rec);
-            // console.log(recipes[index]);
-        })} */}
-        <RecipeList/>
+        <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/sighin" element={<Sighin />} />
+            <Route path="/category" element={<Categories />}/>
+        </Routes>
     </>
 }
 export default App;

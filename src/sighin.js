@@ -3,7 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import axios from "axios";
 import { useDispatch } from 'react-redux';
-import * as actionsName from './action';
+// import * as actionsName from './action';
 
 const schema = yup.object().shape({
     UserName: yup.string().min(3,'שם משתמש עם מינימום 3 תווים').required(),
@@ -26,7 +26,7 @@ const schema = yup.object().shape({
     const onSubmit = (data) => {
       axios.post('http://localhost:8080/api/user/sighin',data)
       .then(user=>{
-        dispatch(actionsName.updateUser(user.data));//to CHECK----------------------------------------------------------------------------
+        // dispatch(actionsName.updateUser(user.data));//to CHECK----------------------------------------------------------------------------
       })
       .catch(er=>{
         alert(er.message)
