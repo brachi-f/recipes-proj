@@ -1,17 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import RecipeForm from './recipes/updateRec';
 import reportWebVitals from './reportWebVitals';
-import Recipe from './recipes/recipe';
-import axios from "axios";
-import App from './App'
+import { Route, Routes } from 'react-router-dom';
+import Login from './login';
+import Sighin from './sighin';
+import Home from './homePage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-  <App/>
-    {/* <RecipeForm IdRecipe={1} isNew={true}/> */}
+    <Routes>
+      <Route path='/' element={<Home/>}/>
+      <Route path="/login" element={<Login/>}/>
+      <Route path="/sighin" element={<Sighin/>}/>
+    </Routes>
   </React.StrictMode>
 );
 
