@@ -54,4 +54,4 @@ const Categories = () => {
         </Grid>
     </>
 }
-export default Categories
+export default Categories;
